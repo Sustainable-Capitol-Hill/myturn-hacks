@@ -16,9 +16,6 @@ if (window.location.pathname === '/library/orgInventory/create') {
             // `Loans & Money` section
             'Daily Late Fee',
             'Grace period on late fees (in days)',
-            'Purchased',
-            'Date Purchased',
-            'Historical Cost',
             'Tax(es)',
             'Source / Supplier'
         ];
