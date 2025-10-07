@@ -21,6 +21,8 @@ if (window.location.pathname === '/library/orgInventory/create') {
         ];
 
         FIELDS_TO_HIDE.forEach(function (fieldLabelText) {
+            // Use an XPath query to find the form field node that we're trying
+            // to hide
             const nodesSnaphot = document.evaluate(
                 `//label[@class="control-label" and text()="${fieldLabelText}"]//ancestor::div[@class="form-group"]`,
                 document,
