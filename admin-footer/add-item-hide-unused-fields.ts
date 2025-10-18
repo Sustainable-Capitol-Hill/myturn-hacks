@@ -43,7 +43,7 @@ if (window.location.pathname === '/library/orgInventory/create') {
             const nodeToHide = nodesSnaphot.snapshotItem(0) as HTMLElement;
             // Can't delete the node, because it must be present in the
             // HTML form submission. But we can hide it.
-            nodeToHide.hidden = true;
+            nodeToHide.style.display = 'none';
         });
 
         // Finally, trigger MyTurn's janky JavaScript to recalculate the height
