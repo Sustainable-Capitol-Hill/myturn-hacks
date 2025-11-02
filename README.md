@@ -31,7 +31,13 @@ still on `localhost`.**
 Simply edit one of the scripts. Commits to the `main` branch will kick off a
 pipeline that bundles them and updates the GitHub Pages site.
 
-Linter fixes and code formatting are performed automatically by a pre-commit hook, which will get installed by `husky` upon package installation by `yarn`.
+Your changes will need to pass linting and formatting checks before you can
+merge them. Run checks with:
+
+```bash
+yarn lint    # eslint
+yarn format  # prettier
+```
 
 If you create a new script, you'll need to add it to the `index.ts` entrypoint
 for the directory.

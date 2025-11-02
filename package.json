@@ -7,7 +7,6 @@
     "express": "^5.1.0",
     "globals": "^16.3.0",
     "http-proxy-middleware": "^3.0.5",
-    "husky": "^9.1.7",
     "jiti": "^2.5.1",
     "lint-staged": "^16.2.6",
     "node-html-parser": "^7.0.1",
@@ -21,13 +20,7 @@
     "dev": "tsx src/proxy.ts",
     "lint": "eslint",
     "format:check": "prettier --check src/",
-    "format:write": "prettier --write src/",
-    "postinstall": "husky",
-    "prepare": "husky install"
+    "format": "prettier --write src/"
   },
-  "type": "module",
-  "lint-staged": {
-    "*.{js,ts}": "eslint --cache --fix",
-    "*.{js,ts,css,md}": "prettier --write"
-  }
+  "type": "module"
 }
