@@ -1,18 +1,24 @@
 {
   "devDependencies": {
     "@eslint/js": "^9.38.0",
+    "@types/express": "^5.0.4",
     "esbuild": "^0.25.8",
     "eslint": "^9.38.0",
+    "express": "^5.1.0",
     "globals": "^16.3.0",
+    "http-proxy-middleware": "^3.0.5",
     "husky": "^9.1.7",
     "jiti": "^2.5.1",
     "lint-staged": "^16.2.6",
+    "node-html-parser": "^7.0.1",
     "posthog-js": "^1.258.6",
     "prettier": "^3.6.2",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.3",
     "typescript-eslint": "^8.46.1"
   },
   "scripts": {
+    "dev": "tsx src/proxy.ts",
     "lint": "eslint",
     "format:check": "prettier --check src/",
     "format:write": "prettier --write src/",
