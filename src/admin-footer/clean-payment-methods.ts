@@ -66,7 +66,7 @@ function callMakePaymentMethodNicer(mutationList, observer) {
 }
 
 const observer = new MutationObserver(callMakePaymentMethodNicer);
-addEventListener("load", () =>
+addEventListener("DOMContentLoaded", () =>
   observer.observe(document.querySelector("#pick-a-method"), {
     childList: true,
   }),
