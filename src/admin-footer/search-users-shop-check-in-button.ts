@@ -17,7 +17,10 @@ function throttle(func: () => void, delay: number) {
   };
 }
 
-function addButtonToUserActionCell(actionCell: HTMLElement) {
+function addButtonToUserActionCell(
+  actionCell: HTMLElement,
+  isEligible: boolean,
+) {
   const lastButton = actionCell?.querySelector(
     "a:last-of-type",
   ) as HTMLAnchorElement | null;
@@ -35,9 +38,7 @@ function addButtonToUserActionCell(actionCell: HTMLElement) {
   // Copy one of the existing buttons and modify it to be our new check-in button
   const checkInButton = lastButton.cloneNode(true) as HTMLAnchorElement;
 
-  const iconChildNode = Array.from(checkInButton.children).filter(
-    (i) => i.nodeType !== Node.TEXT_NODE,
-  )?.[0];
+  const iconChildNode = Array.from(checkInButton.children)?.[0];
   const textChildNode = Array.from(checkInButton.childNodes).filter(
     (i) => i.nodeType === Node.TEXT_NODE,
   )?.[0];
@@ -53,43 +54,56 @@ function addButtonToUserActionCell(actionCell: HTMLElement) {
   }
 
   checkInButton.href = nullHref;
-  checkInButton.onclick = function (e) {
-    e.preventDefault();
-
-    // Prevent accidental spamming of the Google Sheet URL
-    checkInButton.onclick = (e) => {
-      e.preventDefault();
-    };
-
-    // The user is now checked in to the shop, regardless of whether the Google Sheet logging was successful
-    iconChildNode.classList.remove("fa-wrench");
-    iconChildNode.classList.add("fa-check");
-    checkInButton.classList.remove("btn-warning");
-    checkInButton.classList.add("btn-success");
-    textChildNode.textContent = " Checked In To Shop";
-
-    // This URL (and any "password"-y things we tried to add) would need
-    // be sent by the user's browser anyway, so there's no point trying to
-    // obfuscate or hide it
-    fetch(
-      "https://script.google.com/macros/s/AKfycbxxBH45l6yf8GVCG3dHi6Tkp6Y66VPqdgLtPfm6i0HcxvEzcC1J1ajvRWlUb6iiFMZE5w/exec",
-      {
-        method: "POST",
-        redirect: "follow",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
-      },
-    ).catch((err) => {
-      console.error("Error logging the shop check-in to Google Sheets:", err);
-    });
-  };
   checkInButton.classList.remove("btn-primary");
   checkInButton.classList.add("btn-warning");
   iconChildNode.classList.remove("fa-shopping-cart");
-  // This is the best icon we can use, based the icon subset that MyTurn
-  // is built/deployed with
-  iconChildNode.classList.add("fa-wrench");
-  // These anchors all use a space character (rather than proper CSS) to separate their icon from their text
-  textChildNode.textContent = " Check In To Shop";
+
+  if (!isEligible) {
+    iconChildNode.classList.add("fa-ban");
+    // This also disables clicking functionality, etc
+    checkInButton.classList.add("disabled");
+    checkInButton.title = "Patron is not eligible based on membership status";
+    textChildNode.textContent = " Ineligible For Shop";
+  }
+
+  if (isEligible) {
+    // These anchors all use a space character (rather than proper CSS) to separate their icon from their text
+    textChildNode.textContent = " Check In To Shop";
+
+    // This is the best icon we can use, based the icon subset that MyTurn
+    // is built/deployed with
+    iconChildNode.classList.add("fa-wrench");
+
+    checkInButton.onclick = function (e) {
+      e.preventDefault();
+
+      // Prevent accidental spamming of the Google Sheet URL
+      checkInButton.onclick = (e) => {
+        e.preventDefault();
+      };
+
+      // The user is now checked in to the shop, regardless of whether the Google Sheet logging was successful
+      iconChildNode.classList.remove("fa-wrench");
+      iconChildNode.classList.add("fa-check");
+      checkInButton.classList.remove("btn-warning");
+      checkInButton.classList.add("btn-success");
+      textChildNode.textContent = " Checked In To Shop";
+
+      // This URL (and any "password"-y things we tried to add) would need
+      // be sent by the user's browser anyway, so there's no point trying to
+      // obfuscate or hide it
+      fetch(
+        "https://script.google.com/macros/s/AKfycbxxBH45l6yf8GVCG3dHi6Tkp6Y66VPqdgLtPfm6i0HcxvEzcC1J1ajvRWlUb6iiFMZE5w/exec",
+        {
+          method: "POST",
+          redirect: "follow",
+          headers: { "Content-Type": "text/plain;charset=utf-8" },
+        },
+      ).catch((err) => {
+        console.error("Error logging the shop check-in to Google Sheets:", err);
+      });
+    };
+  }
 
   actionCell.appendChild(checkInButton);
 }
@@ -129,14 +143,6 @@ function addButtonsForEligibleUsers() {
     const expiration = row
       .querySelector(`td:nth-of-type(${expirationColumnIndex + 1})`)
       ?.textContent.trim();
-    if (
-      !membership ||
-      !expiration ||
-      !validMembershipTypes.includes(membership) ||
-      new Date(expiration) < new Date()
-    ) {
-      return;
-    }
 
     const actionCell = row.querySelector("td.action-buttons");
     if (!actionCell) {
@@ -144,7 +150,13 @@ function addButtonsForEligibleUsers() {
       return;
     }
 
-    addButtonToUserActionCell(actionCell as HTMLElement);
+    const isEligible =
+      typeof membership === "string" &&
+      typeof expiration === "string" &&
+      validMembershipTypes.includes(membership) &&
+      new Date(expiration) >= new Date();
+
+    addButtonToUserActionCell(actionCell as HTMLElement, isEligible);
   });
 }
 
