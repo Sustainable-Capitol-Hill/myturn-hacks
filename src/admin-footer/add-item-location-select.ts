@@ -141,5 +141,16 @@ if (window.location.pathname === "/library/orgInventory/create") {
     if (!locationCodeContainer) return;
     locationCodeTextInput.remove();
     locationCodeContainer.appendChild(locationCodeSelect);
+
+    // Make the `select`'s value actually get submitted by MyTurn's custom form
+    // logic. In order to "read" a `select` value upon submit, the
+    // `data-attribute-type` has to be changed from `Single-line` (ie, "parse
+    // this text field") to `Maintenance Plan` (Maintenance Plan being one of
+    // the two other `select` fields in this page's form). This is frustrating
+    // – and probably fragile! – but it's the best workaround that I was able
+    // to find.
+    const rowContainer = locationCodeContainer.closest("div.row-location_code");
+    if (!rowContainer) return;
+    rowContainer.setAttribute("data-attribute-type", "Maintenance Plan");
   });
 }
