@@ -6,7 +6,6 @@
 
 const validLocationCodes = {
   "Inventory Room Shelves": [
-    // TODO: Double-check this enumeration of shelves
     "A 1.0",
     "A 1.1",
     "A 1.2",
@@ -15,7 +14,6 @@ const validLocationCodes = {
     "A 1.5",
     "A 2.0",
     "A 2.1",
-    "A 2.2",
     "A 2.3",
     "A 2.4",
     "A 2.5",
@@ -44,23 +42,20 @@ const validLocationCodes = {
     "B 2.2",
     "B 2.3",
     "B 2.4",
-    "C 1.0",
     "C 1.1",
     "C 1.2",
     "C 1.3",
     "C 1.4",
-    "D 1.2",
-    "D 1.3",
+    // The `D 1.#` shelves are for consumables only
     "E 1.0",
     "E 1.1",
     "E 1.2",
     "E 1.3",
     "E 1.35",
     "E 1.4",
-    "E 1.5",
   ],
   "Inventory Room Ends and Walls": [
-    "Battery Center",
+    "Hung on Inventory Room Door",
     "Front Wall",
     "B End",
     "D/E End",
@@ -71,8 +66,9 @@ const validLocationCodes = {
   ],
   "Wood Shop": ["Shop Bench", "Shop Toolbox", "Shop Wall", "Beneath Table Saw"],
   "Front Desk": ["Front Desk", "Shelf Behind Front Desk"],
-  "Front Room": [
-    // TODO: Double-check this enumeration of shelves
+  "Craft and Electronics Area": [
+    // The gardening shelf was labeled `F 0.1` even though it's not at the ground level
+    "F 0.1",
     "F 1.1",
     "F 1.2",
     "F 1.3",
@@ -85,6 +81,8 @@ const validLocationCodes = {
     "F 2.4",
     "F 2.5",
     "F 2.6",
+    "F 2.7",
+    "F 2.8",
     "Bike Area",
     "Mending Shelf",
   ],
