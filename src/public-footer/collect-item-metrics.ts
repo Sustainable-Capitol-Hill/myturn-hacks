@@ -44,7 +44,7 @@ function collectItemData() {
     return data;
   } catch (e) {
     return {
-      item_data_error: (e as Error).toString(),
+      item_data_error: String(e),
     };
   }
 }
