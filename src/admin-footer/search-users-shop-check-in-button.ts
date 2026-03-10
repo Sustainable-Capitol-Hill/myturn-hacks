@@ -4,19 +4,21 @@
 
 import { hashString } from "../utils.ts";
 
-class AgreementsUnsignedError extends Error { }
-class Under18Error extends Error { }
+class AgreementsUnsignedError extends Error {}
+class Under18Error extends Error {}
 
 // Source: https://stackoverflow.com/a/27078401
 // Use this instead of having to add a new dependency
 function throttle(func: () => void, delay: number) {
   let timeout: ReturnType<typeof setTimeout> | null = null;
   return () => {
-    timeout = timeout ?? setTimeout(() => {
-      timeout = null;
-      // This will run the function on the trailing edge rather than the leading edge of the throttling
-      func();
-    }, delay);
+    timeout =
+      timeout ??
+      setTimeout(() => {
+        timeout = null;
+        // This will run the function on the trailing edge rather than the leading edge of the throttling
+        func();
+      }, delay);
   };
 }
 
@@ -26,9 +28,7 @@ function addButtonToUserActionCell(
   hasEligibleMembership: boolean,
 ) {
   let userId: string | null = null;
-  const firstButton = actionCell.querySelector(
-    "a",
-  );
+  const firstButton = actionCell.querySelector("a");
   if (firstButton) {
     const urlParams = new URLSearchParams(new URL(firstButton.href).search);
     userId = urlParams.get("userId");
@@ -38,9 +38,7 @@ function addButtonToUserActionCell(
     return;
   }
 
-  const lastButton = actionCell.querySelector(
-    "a:last-of-type",
-  );
+  const lastButton = actionCell.querySelector("a:last-of-type");
   const nullHref = "#";
   if (
     !lastButton ||
