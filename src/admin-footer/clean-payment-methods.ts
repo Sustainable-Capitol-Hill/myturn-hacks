@@ -50,7 +50,7 @@ function makePaymentMethodNicer() {
   );
   // Add any options we didn't explicitly order, in case more are added.
   paymentMethodOptions.forEach((o) => {
-    if (paymentMethodValuesNewOrder.indexOf(o.value) == -1) {
+    if (!paymentMethodValuesNewOrder.includes(o.value)) {
       paymentMethodOptionsNewOrder.push(o);
     }
   });
@@ -59,7 +59,9 @@ function makePaymentMethodNicer() {
     ...(paymentMethodOptionsNewOrder as Node[]),
   );
   // paymentMethodSelect defaults to the last element. Set default to first element in our ordered list.
-  paymentMethodSelect.value = paymentMethodValuesNewOrder[0] as string;
+  if (typeof paymentMethodValuesNewOrder[0] === "string") {
+    paymentMethodSelect.value = paymentMethodValuesNewOrder[0];
+  }
 }
 
 // The payment options are added after page load in Firefox. Wait till they're added to modify.
@@ -73,8 +75,10 @@ function callMakePaymentMethodNicer(
 
 const observer = new MutationObserver(callMakePaymentMethodNicer);
 addEventListener("DOMContentLoaded", () => {
-  observer.observe(document.querySelector("#pick-a-method") as HTMLElement, {
-    childList: true,
-  })
-},
-);
+  const node = document.querySelector("#pick-a-method");
+  if (node) {
+    observer.observe(node, {
+      childList: true,
+    });
+  }
+});

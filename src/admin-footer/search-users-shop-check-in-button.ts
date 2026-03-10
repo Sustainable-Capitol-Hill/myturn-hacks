@@ -4,21 +4,19 @@
 
 import { hashString } from "../utils.ts";
 
-class AgreementsUnsignedError extends Error {}
-class Under18Error extends Error {}
+class AgreementsUnsignedError extends Error { }
+class Under18Error extends Error { }
 
 // Source: https://stackoverflow.com/a/27078401
 // Use this instead of having to add a new dependency
 function throttle(func: () => void, delay: number) {
   let timeout: ReturnType<typeof setTimeout> | null = null;
   return () => {
-    if (!timeout) {
-      timeout = setTimeout(() => {
-        timeout = null;
-        // This will run the function on the trailing edge rather than the leading edge of the throttling
-        func();
-      }, delay);
-    }
+    timeout = timeout ?? setTimeout(() => {
+      timeout = null;
+      // This will run the function on the trailing edge rather than the leading edge of the throttling
+      func();
+    }, delay);
   };
 }
 
@@ -65,9 +63,9 @@ function addButtonToUserActionCell(
   checkInButtonContainer.appendChild(checkInButton);
 
   const iconChildNode = Array.from(checkInButton.children)[0];
-  const textChildNode = Array.from(checkInButton.childNodes).filter(
+  const textChildNode = Array.from(checkInButton.childNodes).find(
     (i) => i.nodeType === Node.TEXT_NODE,
-  )[0];
+  );
   if (!iconChildNode) {
     console.warn("Could not find the icon for the shop check-in button");
     return;
@@ -255,7 +253,7 @@ function addButtonsForEligibleUsers() {
     // CSS `nth-of-type` selectors are 1-indexed
     const username = row
       .querySelector(`td:nth-of-type(${String(usernameColumnIndex + 1)})`)
-      ?.textContent.trim() as string;
+      ?.textContent.trim();
     const membership = row
       .querySelector(`td:nth-of-type(${String(membershipColumnIndex + 1)})`)
       ?.textContent.trim();

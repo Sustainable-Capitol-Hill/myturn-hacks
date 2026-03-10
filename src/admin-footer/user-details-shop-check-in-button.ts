@@ -56,10 +56,7 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     const warningText = (
       warningNodesSnapshot.snapshotItem(0) as HTMLElement
     ).textContent.trim();
-    const isUserIdConfirmed =
-      !/confirm that they are at least 18 years old on their ID/.test(
-        warningText,
-      );
+    const isUserIdConfirmed = warningText.includes("confirm that they are at least 18 years old on their ID");
 
     const lastButton = document.querySelector(
       "div.actions div.btn-group a:last-of-type",
@@ -85,9 +82,9 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     checkInButton.style.lineHeight = "1.5";
 
     const iconChildNode = Array.from(checkInButton.children)[0];
-    const textChildNode = Array.from(checkInButton.childNodes).filter(
+    const textChildNode = Array.from(checkInButton.childNodes).find(
       (i) => i.nodeType === Node.TEXT_NODE,
-    )[0];
+    );
     if (!iconChildNode) {
       console.warn("Could not find the icon for the shop check-in button");
       return;
@@ -133,7 +130,15 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
         // Check whether the user has signed the required liability waivers
         const userId = new URLSearchParams(window.location.search).get(
           "userId",
-        ) as string;
+        );
+        if (!userId) {
+          console.error("Could not find the member's user ID");
+          alert(
+            "Unable to confirm whether the user has signed the liability waivers. Please confirm this manually.",
+          );
+          return;
+        }
+
         fetch(`/library/orgMembership/listAgreements/${userId}`)
           // This is ridiculous, but MyTurn appears to have a bug where the
           // _previous_ request's "There are agreements to be signed" message is

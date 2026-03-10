@@ -7,9 +7,7 @@ posthog.init("phc_BgkM7UzoKyZHYF1CPzTpmIc6IyRzoQ87Gi8GEW9na1W", {
 
 function collectItemData() {
   try {
-    const itemMatches = window.location.pathname.match(
-      /\/library\/inventory\/show\/(\d+)/,
-    );
+    const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(window.location.pathname);
     const titleMatch = document
       .querySelector(".page-title > h1")
       ?.textContent.match(/(.*)\((\d+)\).*/);
@@ -50,9 +48,7 @@ function collectItemData() {
 }
 
 (function () {
-  const itemMatches = window.location.pathname.match(
-    /\/library\/inventory\/show\/(\d+)/,
-  );
+  const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(window.location.pathname);
 
   const data = collectItemData();
   posthog.capture("item page loaded", data);

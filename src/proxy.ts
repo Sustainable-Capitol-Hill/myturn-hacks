@@ -63,7 +63,7 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
           );
         }
 
-        if (!(contentType && contentType.startsWith("text/html"))) {
+        if (!contentType?.startsWith("text/html")) {
           // don't try to munge any non-html files
           return responseBuffer;
         }
