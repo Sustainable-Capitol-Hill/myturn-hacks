@@ -8,6 +8,10 @@
 // - https://github.com/Sustainable-Capitol-Hill/myturn-hacks/blob/main/src/admin-footer/search-users-shop-check-in-button.ts
 // - https://github.com/Sustainable-Capitol-Hill/myturn-hacks/blob/main/src/admin-footer/user-details-shop-check-in-button.ts
 
+/* global SpreadsheetApp, ContentService */
+
+// This is an implicit export in the GAS environment, so it _is_ actually used
+// eslint-disable-next-line no-unused-vars
 function doPost(e) {
   const postData = JSON.parse(e?.postData?.contents) ?? {};
 
