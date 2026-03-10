@@ -56,7 +56,9 @@ function makePaymentMethodNicer() {
   });
 
   paymentMethodSelect.replaceChildren(
-    ...(paymentMethodOptionsNewOrder as Node[]),
+    ...paymentMethodOptionsNewOrder.filter(
+      (o) => o instanceof HTMLOptionElement,
+    ),
   );
   // paymentMethodSelect defaults to the last element. Set default to first element in our ordered list.
   if (typeof paymentMethodValuesNewOrder[0] === "string") {
