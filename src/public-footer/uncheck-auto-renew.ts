@@ -1,7 +1,9 @@
 document.addEventListener("DOMContentLoaded", () => {
   document
-    .querySelectorAll("input[type=checkbox].auto-renew")
+    .querySelectorAll<HTMLInputElement>("input[type=checkbox].auto-renew")
     .forEach(function (box) {
-      return box.checked && box.click();
+      if (box.checked) {
+        box.click();
+      }
     });
 });

@@ -30,6 +30,9 @@ function clearWarning() {
       },
     ).then(function () {
       warning.remove();
+    })
+    .catch((err: unknown) => {
+      console.error("Error clearing ID warning:", err);
     });
   };
 

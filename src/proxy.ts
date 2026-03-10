@@ -43,7 +43,12 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
   changeOrigin: true,
   selfHandleResponse: true,
   on: {
+    // Odd; based on the docs it seems like this is the correct syntax, but
+    // `tseslint` doesn't. Eg:
+    // https://github.com/chimurai/http-proxy-middleware/blob/master/recipes/response-interceptor.md
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     proxyRes: responseInterceptor(
+      // eslint-disable-next-line @typescript-eslint/require-await
       async (responseBuffer, proxyRes, req, res) => {
         const contentType = proxyRes.headers["content-type"];
 
@@ -53,7 +58,7 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
             "location",
             proxyRes.headers.location.replaceAll(
               MYTURN,
-              `http://${HOST}:${PORT}`,
+              `http://${HOST}:${String(PORT)}`,
             ),
           );
         }
@@ -74,7 +79,7 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
           el?.setAttribute("id", `__devscript=${script}`);
           el?.setAttribute(
             "src",
-            `http://${HOST}:${PORT}/devscripts/${script}.js`,
+            `http://${HOST}:${String(PORT)}/devscripts/${script}.js`,
           );
         });
 
@@ -103,4 +108,4 @@ app.get("/devscripts/:scriptName.js", async (req, res) => {
 app.use("/", proxyMiddleware);
 
 app.listen(PORT);
-console.log(`Proxy server listening on port ${PORT}`);
+console.log(`Proxy server listening on port ${String(PORT)}`);
