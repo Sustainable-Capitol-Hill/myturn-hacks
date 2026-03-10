@@ -56,7 +56,7 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     const warningText = (
       warningNodesSnapshot.snapshotItem(0) as HTMLElement
     ).textContent.trim();
-    const isUserIdConfirmed = warningText.includes("confirm that they are at least 18 years old on their ID");
+    const isUserIdConfirmed = !warningText.includes("confirm that they are at least 18 years old on their ID");
 
     const lastButton = document.querySelector(
       "div.actions div.btn-group a:last-of-type",
@@ -99,6 +99,18 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     checkInButton.href = "#";
     iconChildNode.classList.remove("fa-shopping-cart");
 
+    const userId = new URLSearchParams(window.location.search).get(
+      "userId",
+    );
+    // This should never happen, but just in case
+    if (!userId) {
+      console.warn("Could not find the user ID in the URL");
+      checkInButton.classList.add("disabled");
+      checkInButtonContainer.title =
+        "Unable to confirm whether the user has signed the liability waivers. Please confirm this manually.";
+      return;
+    }
+
     if (!isMembershipActive) {
       iconChildNode.classList.add("fa-ban");
       checkInButton.classList.add("disabled");
@@ -128,17 +140,6 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
         textChildNode.textContent = " Checking In To Shop";
 
         // Check whether the user has signed the required liability waivers
-        const userId = new URLSearchParams(window.location.search).get(
-          "userId",
-        );
-        if (!userId) {
-          console.error("Could not find the member's user ID");
-          alert(
-            "Unable to confirm whether the user has signed the liability waivers. Please confirm this manually.",
-          );
-          return;
-        }
-
         fetch(`/library/orgMembership/listAgreements/${userId}`)
           // This is ridiculous, but MyTurn appears to have a bug where the
           // _previous_ request's "There are agreements to be signed" message is
