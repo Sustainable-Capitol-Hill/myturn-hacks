@@ -2,7 +2,7 @@
 // search page. This button will only appear for users with current memberships.
 // Clicking the button will log the check-in _anonymously_ in a Google Sheet.
 
-import { hashString } from "../utils.js";
+import { hashString } from "../utils.ts";
 
 class AgreementsUnsignedError extends Error {}
 class Under18Error extends Error {}
@@ -28,9 +28,9 @@ function addButtonToUserActionCell(
   hasEligibleMembership: boolean,
 ) {
   let userId: string | null = null;
-  const firstButton = actionCell?.querySelector(
+  const firstButton = actionCell.querySelector(
     "a",
-  ) as HTMLAnchorElement | null;
+  );
   if (firstButton) {
     const urlParams = new URLSearchParams(new URL(firstButton.href).search);
     userId = urlParams.get("userId");
@@ -40,16 +40,16 @@ function addButtonToUserActionCell(
     return;
   }
 
-  const lastButton = actionCell?.querySelector(
+  const lastButton = actionCell.querySelector(
     "a:last-of-type",
-  ) as HTMLAnchorElement | null;
+  );
   const nullHref = "#";
   if (
     !lastButton ||
     // Don't add the button again if it's already been added
-    lastButton.href === nullHref ||
+    (lastButton as HTMLAnchorElement).href === nullHref ||
     // Some browsers transform `#` into the full URL tailing with `#`
-    lastButton.href.endsWith("#")
+    (lastButton as HTMLAnchorElement).href.endsWith("#")
   ) {
     return;
   }
@@ -64,10 +64,10 @@ function addButtonToUserActionCell(
   const checkInButton = lastButton.cloneNode(true) as HTMLAnchorElement;
   checkInButtonContainer.appendChild(checkInButton);
 
-  const iconChildNode = Array.from(checkInButton.children)?.[0];
+  const iconChildNode = Array.from(checkInButton.children)[0];
   const textChildNode = Array.from(checkInButton.childNodes).filter(
     (i) => i.nodeType === Node.TEXT_NODE,
-  )?.[0];
+  )[0];
   if (!iconChildNode) {
     console.warn("Could not find the icon for the shop check-in button");
     return;
@@ -141,7 +141,7 @@ function addButtonToUserActionCell(
             throw new Under18Error();
           }
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           if (err instanceof AgreementsUnsignedError) {
             iconChildNode.classList.remove("fa-spinner", "fa-spin");
             iconChildNode.classList.add("fa-ban");
@@ -205,7 +205,7 @@ function addButtonToUserActionCell(
             ),
           );
         })
-        .catch((err) => {
+        .catch((err: unknown) => {
           if (
             !(
               err instanceof AgreementsUnsignedError ||
@@ -242,9 +242,9 @@ function addButtonsForEligibleUsers() {
   // Assert that we're parsing the correct columns
   const headerCells = document.querySelectorAll("table#user-list thead tr th");
   if (
-    headerCells[usernameColumnIndex]?.textContent?.trim() !== "User" ||
-    headerCells[membershipColumnIndex]?.textContent?.trim() !== "Membership" ||
-    headerCells[expirationColumnIndex]?.textContent?.trim() !== "Expiration"
+    headerCells[usernameColumnIndex]?.textContent.trim() !== "User" ||
+    headerCells[membershipColumnIndex]?.textContent.trim() !== "Membership" ||
+    headerCells[expirationColumnIndex]?.textContent.trim() !== "Expiration"
   ) {
     console.error("Could not find the expected columns in user list table");
     return;
@@ -254,13 +254,13 @@ function addButtonsForEligibleUsers() {
   userRows.forEach((row) => {
     // CSS `nth-of-type` selectors are 1-indexed
     const username = row
-      .querySelector(`td:nth-of-type(${usernameColumnIndex + 1})`)
+      .querySelector(`td:nth-of-type(${String(usernameColumnIndex + 1)})`)
       ?.textContent.trim() as string;
     const membership = row
-      .querySelector(`td:nth-of-type(${membershipColumnIndex + 1})`)
+      .querySelector(`td:nth-of-type(${String(membershipColumnIndex + 1)})`)
       ?.textContent.trim();
     const expiration = row
-      .querySelector(`td:nth-of-type(${expirationColumnIndex + 1})`)
+      .querySelector(`td:nth-of-type(${String(expirationColumnIndex + 1)})`)
       ?.textContent.trim();
 
     const actionCell = row.querySelector("td.action-buttons");

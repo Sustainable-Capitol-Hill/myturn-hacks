@@ -6,9 +6,9 @@
 // button to the membership edit page. Clicking the button will log the check-in
 // _anonymously_ in a Google Sheet.
 
-import { hashString } from "../utils.js";
+import { hashString } from "../utils.ts";
 
-class AgreementsUnsignedError extends Error {}
+class AgreementsUnsignedError extends Error { }
 
 function getUserDetailsNodes(fieldName: string) {
   return document.evaluate(
@@ -51,7 +51,7 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
       0,
     ) as HTMLElement;
     const isMembershipActive =
-      membershipInfoNode.querySelector("span.badge")?.textContent?.trim() ===
+      membershipInfoNode.querySelector("span.badge")?.textContent.trim() ===
       "Active";
     const warningText = (
       warningNodesSnapshot.snapshotItem(0) as HTMLElement
@@ -63,7 +63,7 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
 
     const lastButton = document.querySelector(
       "div.actions div.btn-group a:last-of-type",
-    ) as HTMLAnchorElement | null;
+    );
     if (!lastButton) {
       return;
     }
@@ -84,10 +84,10 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     checkInButton.style.padding = "4px 10px";
     checkInButton.style.lineHeight = "1.5";
 
-    const iconChildNode = Array.from(checkInButton.children)?.[0];
+    const iconChildNode = Array.from(checkInButton.children)[0];
     const textChildNode = Array.from(checkInButton.childNodes).filter(
       (i) => i.nodeType === Node.TEXT_NODE,
-    )?.[0];
+    )[0];
     if (!iconChildNode) {
       console.warn("Could not find the icon for the shop check-in button");
       return;
@@ -147,7 +147,7 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
               throw new AgreementsUnsignedError();
             }
           })
-          .catch((err) => {
+          .catch((err: unknown) => {
             if (err instanceof AgreementsUnsignedError) {
               iconChildNode.classList.remove("fa-wrench");
               iconChildNode.classList.add("fa-ban");
@@ -177,32 +177,33 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
             iconChildNode.classList.add("fa-check");
             textChildNode.textContent = " Checked In To Shop";
 
-            return hashString(username).then((hashedUsername) =>
-              // This POST request will result in a new row being added to this Google Sheet:
-              // https://docs.google.com/spreadsheets/d/1D67pfv4X-n1ugFQCK5gd_N4f2C80ozOaGU4P6ewMRKQ/edit
-              fetch(
-                // This URL (and any "password"-y things we tried to add) would need
-                // be sent by the user's browser anyway, so there's no point trying to
-                // obfuscate or hide it
-                "https://script.google.com/macros/s/AKfycbxNfL-5HBoCrEx4v99Ei90SHMz1oiOps4REeynq6RBAk0IHF_VUuipe6URGyl8ztOoX/exec",
-                {
-                  method: "POST",
-                  redirect: "follow",
-                  // We don't need the entire hash, just enough to roughly identify
-                  // repeat users
-                  body: JSON.stringify({
-                    hashedUsername: hashedUsername.slice(0, 7),
-                  }),
-                },
-              ).catch((err) => {
-                if (!(err instanceof AgreementsUnsignedError)) {
-                  console.error(
-                    "Error logging the shop check-in to Google Sheets:",
-                    err,
-                  );
-                }
-              }),
-            );
+            return hashString(username)
+          })
+          .then((hashedUsername) =>
+            // This POST request will result in a new row being added to this Google Sheet:
+            // https://docs.google.com/spreadsheets/d/1D67pfv4X-n1ugFQCK5gd_N4f2C80ozOaGU4P6ewMRKQ/edit
+            fetch(
+              // This URL (and any "password"-y things we tried to add) would need
+              // be sent by the user's browser anyway, so there's no point trying to
+              // obfuscate or hide it
+              "https://script.google.com/macros/s/AKfycbxNfL-5HBoCrEx4v99Ei90SHMz1oiOps4REeynq6RBAk0IHF_VUuipe6URGyl8ztOoX/exec",
+              {
+                method: "POST",
+                redirect: "follow",
+                // We don't need the entire hash, just enough to roughly identify
+                // repeat users
+                body: JSON.stringify({
+                  hashedUsername: hashedUsername.slice(0, 7),
+                }),
+              },
+            )
+          ).catch((err: unknown) => {
+            if (!(err instanceof AgreementsUnsignedError)) {
+              console.error(
+                "Error logging the shop check-in to Google Sheets:",
+                err,
+              );
+            }
           });
       };
     }
