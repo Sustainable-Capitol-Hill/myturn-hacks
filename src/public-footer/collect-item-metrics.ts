@@ -7,7 +7,9 @@ posthog.init("phc_BgkM7UzoKyZHYF1CPzTpmIc6IyRzoQ87Gi8GEW9na1W", {
 
 function collectItemData() {
   try {
-    const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(window.location.pathname);
+    const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(
+      window.location.pathname,
+    );
     const titleMatch = document
       .querySelector(".page-title > h1")
       ?.textContent.match(/(.*)\((\d+)\).*/);
@@ -48,16 +50,16 @@ function collectItemData() {
 }
 
 (function () {
-  const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(window.location.pathname);
+  const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(
+    window.location.pathname,
+  );
 
   const data = collectItemData();
   posthog.capture("item page loaded", data);
 
   if (itemMatches != null) {
     const inStock = Array.from(document.querySelectorAll("span.badge"))
-      .find(
-        (badge) => !badge.classList.toString().includes("reservation"),
-      )
+      .find((badge) => !badge.classList.toString().includes("reservation"))
       ?.textContent.includes("In Stock");
 
     if (!inStock) {

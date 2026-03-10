@@ -8,7 +8,7 @@
 
 import { hashString } from "../utils.ts";
 
-class AgreementsUnsignedError extends Error { }
+class AgreementsUnsignedError extends Error {}
 
 function getUserDetailsNodes(fieldName: string) {
   return document.evaluate(
@@ -56,7 +56,9 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     const warningText = (
       warningNodesSnapshot.snapshotItem(0) as HTMLElement
     ).textContent.trim();
-    const isUserIdConfirmed = !warningText.includes("confirm that they are at least 18 years old on their ID");
+    const isUserIdConfirmed = !warningText.includes(
+      "confirm that they are at least 18 years old on their ID",
+    );
 
     const lastButton = document.querySelector(
       "div.actions div.btn-group a:last-of-type",
@@ -99,9 +101,7 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     checkInButton.href = "#";
     iconChildNode.classList.remove("fa-shopping-cart");
 
-    const userId = new URLSearchParams(window.location.search).get(
-      "userId",
-    );
+    const userId = new URLSearchParams(window.location.search).get("userId");
     // This should never happen, but just in case
     if (!userId) {
       console.warn("Could not find the user ID in the URL");
@@ -183,7 +183,7 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
             iconChildNode.classList.add("fa-check");
             textChildNode.textContent = " Checked In To Shop";
 
-            return hashString(username)
+            return hashString(username);
           })
           .then((hashedUsername) =>
             // This POST request will result in a new row being added to this Google Sheet:
@@ -202,8 +202,9 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
                   hashedUsername: hashedUsername.slice(0, 7),
                 }),
               },
-            )
-          ).catch((err: unknown) => {
+            ),
+          )
+          .catch((err: unknown) => {
             if (!(err instanceof AgreementsUnsignedError)) {
               console.error(
                 "Error logging the shop check-in to Google Sheets:",

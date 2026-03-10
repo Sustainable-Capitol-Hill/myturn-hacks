@@ -24,8 +24,8 @@ export default defineConfig([
     extends: ["tseslint/strictTypeChecked", "tseslint/stylisticTypeChecked"],
     languageOptions: {
       parserOptions: {
-        projectService: true
-      }
+        projectService: true,
+      },
     },
-  }
+  },
 ]);
