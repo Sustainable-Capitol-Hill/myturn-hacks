@@ -1,31 +1,42 @@
 function getFirstAvailableId(): Promise<number> {
   const minimumIdNumber = 100;
   const formData = new FormData();
-  formData.append("_exportItemType", "true");
   formData.append("format", "csv");
+  formData.append("_exportItemType", "false");
 
   return fetch("/library/orgInventory/report", {
     method: "POST",
-    redirect: "follow",
     body: formData,
   })
-    .then((response) => response.text())
+    .then((response) => {
+      if (!response.ok) {
+        throw new Error(
+          `report resulted in an error: ${response.status} ${response.statusText}`,
+        );
+      }
+      return response.text();
+    })
     .then((body) => {
       const lines = body.split(/\r?\n/);
+      if (lines[lines.length - 1] === "") {
+        lines.pop();
+      }
       const ids = [];
 
+      const stripQuotesRegex = /['"]?([0-9]+)['"]?/;
       // First line is the column header, so start at 1 instead of 0.
       for (let i = 1; i < lines.length; i++) {
         const rawItemId = lines[i]!;
-        // All of the IDs come wrapped in quotes, so if there is a number in there, length will be greater than 2.
-        if (rawItemId == null || rawItemId!.length <= 2) {
-          continue;
-        }
 
-        const idWithQuotesStripped = rawItemId.substring(
-          1,
-          rawItemId.length - 1,
-        );
+        const match = rawItemId.match(stripQuotesRegex);
+        // We expect an array length of 2 from this match.
+        // 0 is the number with quotes, 1 is the number without quotes.
+        if (match?.length !== 2) {
+          throw new Error(
+            `Found an unexpected line: ${rawItemId}, line number = ${i}`,
+          );
+        }
+        const idWithQuotesStripped = match[1]!;
         const itemId = parseInt(idWithQuotesStripped);
         ids.push(itemId);
       }
@@ -47,6 +58,10 @@ function getFirstAvailableId(): Promise<number> {
       }
 
       return previousId + 1;
+    })
+    .catch((error) => {
+      console.error("Error occurred searching for first available ID:", error);
+      return 0;
     });
 }
 
@@ -55,10 +70,17 @@ if (
   window.location.pathname.startsWith("/library/orgInventory/copy/")
 ) {
   document.addEventListener("DOMContentLoaded", function () {
-    const itemIdField = document.querySelector("#internal-id");
+    const itemIdField = <HTMLInputElement | null>(
+      document.getElementById("internal-id")
+    );
+    if (!itemIdField) {
+      return;
+    }
+    itemIdField.disabled = true;
     getFirstAvailableId().then((firstAvailableId) => {
+      itemIdField.disabled = false;
       if (firstAvailableId > 0) {
-        itemIdField?.setAttribute("value", firstAvailableId.toString());
+        itemIdField.value = firstAvailableId.toString();
       }
     });
   });
