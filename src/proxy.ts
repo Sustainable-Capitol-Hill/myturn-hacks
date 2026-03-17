@@ -12,9 +12,9 @@ import type { Request, Response } from "express";
  *   with the ones served locally.
  */
 
-const HOST = process.argv[2] ?? "localhost";
-const PORT = process.argv[3] ? Number.parseInt(process.argv[3]) : 3000;
-const MYTURN = "https://capitolhill.myturn.com";
+const HOST = process.env.HOST ?? "localhost";
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 3000;
+const MYTURN = process.env.MYTURN ?? "https://capitolhill.test.myturn.com";
 const SCRIPTS = ["public-footer", "admin-footer"];
 
 import {
