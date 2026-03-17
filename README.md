@@ -37,11 +37,18 @@ This server:
 1. builds the current contents of `src/admin-footer/index.ts` and `src/public-footer/index.ts` whenever any files in the `src` directory are changed, including source maps
 2. injects these two scripts into our MyTurn site, _replacing_ the deployed/production scripts
 
+By default this targets the MyTurn test instance at [https://capitolhill.test.myturn.com](https://capitolhill.test.myturn.com) but you can override this when an environment variable if you want, e.g.,
+
+```bash
+MYTURN=https://capitolhill.myturn.com yarn dev
+```
+
+You can also override the `HOST` or `PORT` via environment variables.
+
 Gotchas:
 
 - If you create a new script, make sure that it is `import`ed in its respective `index.ts` or else it will not work
 - [This proxy server _does not_ work in macOS Safari](https://bugs.webkit.org/show_bug.cgi?id=232088)
-- There are some cases where MyTurn redirects you back to the real site (ie, from http://localhost:3000 to https://capitolhill.myturn.com); if notice that your code isn't working, make sure your browser is still pointed at `localhost`
 
 ### Conventions
 
