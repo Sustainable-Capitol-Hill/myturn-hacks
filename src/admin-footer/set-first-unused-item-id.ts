@@ -64,7 +64,12 @@ function getFirstAvailableId(): Promise<number> {
 
       let previousId = 0;
       for (let i = 1; i < ids.length; i++) {
-        const currentId = ids[i]!;
+        const currentId = ids[i];
+        if (!currentId) {
+          throw new Error(
+            `This should not have been possible, but there is a null id number in the list. index=${i}`,
+          );
+        }
         if (currentId - previousId > 1 && currentId > minimumIdNumber) {
           return Math.max(previousId + 1, minimumIdNumber);
         }
