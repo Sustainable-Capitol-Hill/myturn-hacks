@@ -67,7 +67,7 @@ function getFirstAvailableId(): Promise<number> {
         const currentId = ids[i];
         if (!currentId) {
           throw new Error(
-            `This should not have been possible, but there is a null id number in the list. index=${i}`,
+            `This should not have been possible, but there is a null id number in the list. index=${i.toString()}`,
           );
         }
         if (currentId - previousId > 1 && currentId > minimumIdNumber) {
