@@ -53,14 +53,17 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
         const contentType = proxyRes.headers["content-type"];
 
         // redirect everything back to proxy
-        if (proxyRes.headers.location) {
-          res.setHeader(
-            "location",
-            proxyRes.headers.location.replaceAll(
-              MYTURN,
-              `http://${HOST}:${String(PORT)}`,
-            ),
-          );
+        if (
+          proxyRes.headers.location
+            ?.toLowerCase()
+            .includes(MYTURN.toLowerCase())
+        ) {
+          const url = new URL(proxyRes.headers.location);
+
+          url.protocol = "http:"; // local server doesn't use TLS
+          url.host = `${HOST}:${String(PORT)}`;
+
+          res.setHeader("location", url.toString());
         }
 
         if (!contentType?.startsWith("text/html")) {
