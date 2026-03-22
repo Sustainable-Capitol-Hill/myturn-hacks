@@ -49,7 +49,7 @@ function getFirstAvailableId(): Promise<number> {
         const idWithQuotesStripped = match[1];
         if (!idWithQuotesStripped) {
           throw new Error(
-            `This should not have been possible, but regex.exec returned a null string. Line=${rawItemId}, line number=${i.toString()}`,
+            `regex.exec returned a null string. Line=${rawItemId}, line number=${i.toString()}`,
           );
         }
         const itemId = parseInt(idWithQuotesStripped);
@@ -57,7 +57,7 @@ function getFirstAvailableId(): Promise<number> {
       }
 
       if (ids.length == 0) {
-        return 0;
+        throw new Error("No roperly formatted item IDs found.");
       }
 
       ids.sort((num1, num2) => num1 - num2);
@@ -67,7 +67,7 @@ function getFirstAvailableId(): Promise<number> {
         const currentId = ids[i];
         if (!currentId) {
           throw new Error(
-            `This should not have been possible, but there is a null id number in the list. index=${i.toString()}`,
+            `Encountered a null id number in the list. index=${i.toString()}`,
           );
         }
         if (currentId - previousId > 1 && currentId > minimumIdNumber) {
@@ -78,10 +78,27 @@ function getFirstAvailableId(): Promise<number> {
       }
 
       return previousId + 1;
+    });
+}
+
+function populateItemIdField(itemIdField: HTMLInputElement) {
+  itemIdField.disabled = true;
+  itemIdField.placeholder = "Searching for first available ID...";
+
+  getFirstAvailableId()
+    .then((firstAvailableId) => {
+      itemIdField.value = firstAvailableId.toString();
     })
     .catch((error: unknown) => {
-      console.error("Error occurred searching for first available ID:", error);
-      return 0;
+      console.error(
+        "An error ocurred searching for unavailable item IDs",
+        error,
+      );
+    })
+    .finally(() => {
+      itemIdField.placeholder = "";
+      itemIdField.disabled = false;
+      itemIdField.dispatchEvent(new KeyboardEvent("keyup"));
     });
 }
 
@@ -96,30 +113,30 @@ if (
     if (!itemIdField) {
       return;
     }
-    itemIdField.disabled = true;
 
-    const helpBlocks = document.querySelectorAll("p.help-block");
-    helpBlocks.forEach((helpText) => {
-      if (
-        helpText.innerHTML === "ID will be assigned automatically if left blank"
-      ) {
-        helpText.innerHTML =
-          "ID is populated automatically based on unused IDs in our system";
+    const idFormGroup = itemIdField.closest(".form-group");
+    const helpBlock = idFormGroup?.querySelector(".help-block");
+
+    if (helpBlock) {
+      helpBlock.innerHTML =
+        "ID is populated automatically based on unused IDs in our system.";
+    }
+
+    populateItemIdField(itemIdField);
+
+    if (!idFormGroup) {
+      return;
+    }
+
+    const observer = new MutationObserver(() => {
+      if (idFormGroup.querySelector("div#internal-id-error")) {
+        populateItemIdField(itemIdField);
       }
     });
-
-    getFirstAvailableId()
-      .then((firstAvailableId) => {
-        itemIdField.disabled = false;
-        if (firstAvailableId > 0) {
-          itemIdField.value = firstAvailableId.toString();
-        }
-      })
-      .catch((error: unknown) => {
-        console.error(
-          "This should not have been possible, but there was an error trying to populate the item ID field",
-          error,
-        );
-      });
+    observer.observe(idFormGroup, {
+      subtree: true,
+      childList: true,
+      attributeFilter: [],
+    });
   });
 }
