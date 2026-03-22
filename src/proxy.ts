@@ -12,9 +12,9 @@ import type { Request, Response } from "express";
  *   with the ones served locally.
  */
 
-const HOST = process.argv[2] ?? "localhost";
-const PORT = process.argv[3] ? Number.parseInt(process.argv[3]) : 3000;
-const MYTURN = "https://capitolhill.myturn.com";
+const HOST = process.env.HOST ?? "localhost";
+const PORT = process.env.PORT ? Number.parseInt(process.env.PORT) : 3000;
+const MYTURN = process.env.MYTURN ?? "https://capitolhill.test.myturn.com";
 const SCRIPTS = ["public-footer", "admin-footer"];
 
 import {
@@ -43,22 +43,30 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
   changeOrigin: true,
   selfHandleResponse: true,
   on: {
+    // Odd; based on the docs it seems like this is the correct syntax, but
+    // `tseslint` doesn't. Eg:
+    // https://github.com/chimurai/http-proxy-middleware/blob/master/recipes/response-interceptor.md
+    // eslint-disable-next-line @typescript-eslint/no-misused-promises
     proxyRes: responseInterceptor(
+      // eslint-disable-next-line @typescript-eslint/require-await
       async (responseBuffer, proxyRes, req, res) => {
         const contentType = proxyRes.headers["content-type"];
 
         // redirect everything back to proxy
-        if (proxyRes.headers.location) {
-          res.setHeader(
-            "location",
-            proxyRes.headers.location.replaceAll(
-              MYTURN,
-              `http://${HOST}:${PORT}`,
-            ),
-          );
+        if (
+          proxyRes.headers.location
+            ?.toLowerCase()
+            .includes(MYTURN.toLowerCase())
+        ) {
+          const url = new URL(proxyRes.headers.location);
+
+          url.protocol = "http:"; // local server doesn't use TLS
+          url.host = `${HOST}:${String(PORT)}`;
+
+          res.setHeader("location", url.toString());
         }
 
-        if (!(contentType && contentType.startsWith("text/html"))) {
+        if (!contentType?.startsWith("text/html")) {
           // don't try to munge any non-html files
           return responseBuffer;
         }
@@ -74,7 +82,7 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
           el?.setAttribute("id", `__devscript=${script}`);
           el?.setAttribute(
             "src",
-            `http://${HOST}:${PORT}/devscripts/${script}.js`,
+            `http://${HOST}:${String(PORT)}/devscripts/${script}.js`,
           );
         });
 
@@ -103,4 +111,4 @@ app.get("/devscripts/:scriptName.js", async (req, res) => {
 app.use("/", proxyMiddleware);
 
 app.listen(PORT);
-console.log(`Proxy server listening on port ${PORT}`);
+console.log(`Proxy server listening on port ${String(PORT)}`);

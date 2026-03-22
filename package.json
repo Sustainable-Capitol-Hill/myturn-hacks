@@ -10,7 +10,6 @@
     "http-proxy-middleware": "^3.0.5",
     "jiti": "^2.5.1",
     "jsdom": "^27.1.0",
-    "lint-staged": "^16.2.6",
     "posthog-js": "^1.258.6",
     "prettier": "^3.6.2",
     "tsx": "^4.20.6",
@@ -24,9 +23,5 @@
     "format": "prettier --write src/"
   },
   "type": "module",
-  "dependencies": {},
-  "lint-staged": {
-    "*.{js,ts}": "eslint --cache --fix",
-    "*.{js,ts,css,md}": "prettier --write"
-  }
+  "dependencies": {}
 }

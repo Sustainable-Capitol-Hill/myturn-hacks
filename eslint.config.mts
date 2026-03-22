@@ -13,5 +13,19 @@ export default defineConfig([
     extends: ["js/recommended"],
     languageOptions: { globals: globals.browser },
   },
-  tseslint.configs.recommended,
+  {
+    files: ["scripts/**/*.{js,ts,gs}"],
+    plugins: { js },
+    extends: ["js/recommended"],
+  },
+  {
+    files: ["**/*.{ts,mts,cts}"],
+    plugins: { tseslint },
+    extends: ["tseslint/strictTypeChecked", "tseslint/stylisticTypeChecked"],
+    languageOptions: {
+      parserOptions: {
+        projectService: true,
+      },
+    },
+  },
 ]);

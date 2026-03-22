@@ -4,7 +4,7 @@
 */
 document.addEventListener("DOMContentLoaded", function () {
   Array.from(
-    document.querySelector("[name='membershipTransition.newType']")?.children ||
+    document.querySelector("[name='membershipTransition.newType']")?.children ??
       [],
   ).forEach(function (option) {
     if (option.textContent.includes("regular")) {

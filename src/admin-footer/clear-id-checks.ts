@@ -28,9 +28,13 @@ function clearWarning() {
         body: params.toString(),
         method: "POST",
       },
-    ).then(function () {
-      warning.remove();
-    });
+    )
+      .then(function () {
+        warning.remove();
+      })
+      .catch((err: unknown) => {
+        console.error("Error clearing ID warning:", err);
+      });
   };
 
   const button = document.createElement("button");

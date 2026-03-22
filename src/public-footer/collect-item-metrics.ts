@@ -7,14 +7,14 @@ posthog.init("phc_BgkM7UzoKyZHYF1CPzTpmIc6IyRzoQ87Gi8GEW9na1W", {
 
 function collectItemData() {
   try {
-    const itemMatches = window.location.pathname.match(
-      /\/library\/inventory\/show\/(\d+)/,
+    const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(
+      window.location.pathname,
     );
     const titleMatch = document
       .querySelector(".page-title > h1")
       ?.textContent.match(/(.*)\((\d+)\).*/);
 
-    let data: { [key: string]: string | undefined } = {
+    let data: Record<string, string | undefined> = {
       isLoggedIn: (!document.querySelector("#login-link")).toString(),
       isAdmin: (!!document.querySelector("i.icon-speedometer")).toString(),
     };
@@ -30,8 +30,8 @@ function collectItemData() {
           ?.textContent,
       };
       const inStock = Array.from(document.querySelectorAll("span.badge"))
-        .find((badge) => !badge.classList?.toString().includes("reservation"))
-        ?.textContent?.includes("In Stock");
+        .find((badge) => !badge.classList.toString().includes("reservation"))
+        ?.textContent.includes("In Stock");
 
       if (inStock !== undefined) {
         data = {
@@ -44,14 +44,14 @@ function collectItemData() {
     return data;
   } catch (e) {
     return {
-      item_data_error: e.toString(),
+      item_data_error: String(e),
     };
   }
 }
 
 (function () {
-  const itemMatches = window.location.pathname.match(
-    /\/library\/inventory\/show\/(\d+)/,
+  const itemMatches = /\/library\/inventory\/show\/(\d+)/.exec(
+    window.location.pathname,
   );
 
   const data = collectItemData();
@@ -59,10 +59,8 @@ function collectItemData() {
 
   if (itemMatches != null) {
     const inStock = Array.from(document.querySelectorAll("span.badge"))
-      .find(
-        (badge) => !(badge.classList ?? "").toString().includes("reservation"),
-      )
-      ?.textContent?.includes("In Stock");
+      .find((badge) => !badge.classList.toString().includes("reservation"))
+      ?.textContent.includes("In Stock");
 
     if (!inStock) {
       const messageBox = document.createElement("div");

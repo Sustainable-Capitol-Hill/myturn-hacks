@@ -6,7 +6,8 @@
  * Authors: Max Shenfield
  */
 function makePaymentMethodNicer() {
-  const paymentMethodSelect = document.querySelector("#pick-a-method");
+  const paymentMethodSelect =
+    document.querySelector<HTMLSelectElement>("#pick-a-method");
   if (paymentMethodSelect == null) {
     return;
   }
@@ -21,7 +22,7 @@ function makePaymentMethodNicer() {
   ]);
 
   const paymentMethodOptions = Array.from(
-    document.querySelectorAll("#pick-a-method > option"),
+    document.querySelectorAll<HTMLOptionElement>("#pick-a-method > option"),
   );
 
   paymentMethodOptions.forEach((o) => {
@@ -31,7 +32,7 @@ function makePaymentMethodNicer() {
   });
 
   // Order remaining "Payment method" optiions
-  const paymentMethodValuesNewOrder = [
+  const paymentMethodValuesNewOrder: string[] = [
     "3", // "In-Person Credit/Debit"
     "1", // "Cash"
     "5", // "Paypal, Venmo, CashApp"
@@ -39,35 +40,47 @@ function makePaymentMethodNicer() {
     "8", // "Discount"
   ];
 
-  paymentMethodOptionsByValue = new Map();
+  const paymentMethodOptionsByValue = new Map<string, HTMLOptionElement>();
   paymentMethodOptions.forEach((o) => {
-    paymentMethodOptionsByValue[o.value] = o;
+    paymentMethodOptionsByValue.set(o.value, o);
   });
 
-  const paymentMethodOptionsNewOrder = paymentMethodValuesNewOrder.map(
-    (v) => paymentMethodOptionsByValue[v],
+  const paymentMethodOptionsNewOrder = paymentMethodValuesNewOrder.map((v) =>
+    paymentMethodOptionsByValue.get(v),
   );
   // Add any options we didn't explicitly order, in case more are added.
   paymentMethodOptions.forEach((o) => {
-    if (paymentMethodValuesNewOrder.indexOf(o.value) == -1) {
+    if (!paymentMethodValuesNewOrder.includes(o.value)) {
       paymentMethodOptionsNewOrder.push(o);
     }
   });
 
-  paymentMethodSelect.replaceChildren(...paymentMethodOptionsNewOrder);
+  paymentMethodSelect.replaceChildren(
+    ...paymentMethodOptionsNewOrder.filter(
+      (o) => o instanceof HTMLOptionElement,
+    ),
+  );
   // paymentMethodSelect defaults to the last element. Set default to first element in our ordered list.
-  paymentMethodSelect.value = paymentMethodValuesNewOrder[0];
+  if (typeof paymentMethodValuesNewOrder[0] === "string") {
+    paymentMethodSelect.value = paymentMethodValuesNewOrder[0];
+  }
 }
 
 // The payment options are added after page load in Firefox. Wait till they're added to modify.
-function callMakePaymentMethodNicer(mutationList, observer) {
+function callMakePaymentMethodNicer(
+  mutationList: MutationRecord[],
+  observer: MutationObserver,
+) {
   observer.disconnect();
   makePaymentMethodNicer();
 }
 
 const observer = new MutationObserver(callMakePaymentMethodNicer);
-addEventListener("DOMContentLoaded", () =>
-  observer.observe(document.querySelector("#pick-a-method"), {
-    childList: true,
-  }),
-);
+addEventListener("DOMContentLoaded", () => {
+  const node = document.querySelector("#pick-a-method");
+  if (node) {
+    observer.observe(node, {
+      childList: true,
+    });
+  }
+});
