@@ -98,6 +98,7 @@ function populateItemIdField(itemIdField: HTMLInputElement) {
     .finally(() => {
       itemIdField.placeholder = "";
       itemIdField.disabled = false;
+      // Generate a keyup event to trigger the page to re-validate the item ID input and hide any ID error message it was showing.
       itemIdField.dispatchEvent(new KeyboardEvent("keyup"));
     });
 }
@@ -129,6 +130,8 @@ if (
     }
 
     const observer = new MutationObserver(() => {
+      // When the user clicks save, MyTurn validates the item ID and will display an error message if the ID is already in use.
+      // The div#internal-id-error selector will find that error message, so if that message appears, we will rerun the process to find a new unused ID.
       if (idFormGroup.querySelector("div#internal-id-error")) {
         populateItemIdField(itemIdField);
       }
