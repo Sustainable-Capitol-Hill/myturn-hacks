@@ -57,7 +57,7 @@ function getFirstAvailableId(): Promise<number> {
       }
 
       if (ids.length == 0) {
-        throw new Error("No roperly formatted item IDs found.");
+        throw new Error("No properly formatted item IDs found.");
       }
 
       ids.sort((num1, num2) => num1 - num2);
