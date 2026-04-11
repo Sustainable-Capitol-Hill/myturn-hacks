@@ -252,6 +252,11 @@ function addButtonsForEligibleUsers() {
     const username = row
       .querySelector(`td:nth-of-type(${String(usernameColumnIndex + 1)})`)
       ?.textContent.trim();
+    if (!username) {
+      console.warn("Could not find username in a user row");
+      return;
+    }
+
     const membership = row
       .querySelector(`td:nth-of-type(${String(membershipColumnIndex + 1)})`)
       ?.textContent.trim();

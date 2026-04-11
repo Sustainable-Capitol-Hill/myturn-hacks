@@ -17,7 +17,7 @@ if (window.location.pathname === "/library/myAccount/index") {
 
     FIELDS_TO_HIDE.forEach(function (fieldId) {
       const nodes = document.querySelectorAll(
-        `div.form-group:has(*[id='${fieldId}'])`,
+        `div.form-group:has(*[name='${fieldId}'])`,
       );
 
       if (nodes.length !== 1) {

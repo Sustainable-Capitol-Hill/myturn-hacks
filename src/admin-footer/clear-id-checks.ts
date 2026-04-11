@@ -18,17 +18,13 @@ function clearWarning() {
   params.append("text", "");
 
   const clickHandler = function () {
-    fetch(
-      "https://capitolhill.myturn.com/library/orgMembership/saveUserWarning",
-      {
-        headers: {
-          "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        },
-        referrer: "https://capitolhill.myturn.com/",
-        body: params.toString(),
-        method: "POST",
+    fetch("/library/orgMembership/saveUserWarning", {
+      headers: {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
       },
-    )
+      body: params.toString(),
+      method: "POST",
+    })
       .then(function () {
         warning.remove();
       })
