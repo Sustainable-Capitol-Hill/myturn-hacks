@@ -3,7 +3,7 @@
 
 if (window.location.pathname === "/library/myAccount/index") {
   document.addEventListener("DOMContentLoaded", function () {
-    // Use field `id` attributes instead of text, because some of the fields
+    // Use field attributes instead of text, because some of the fields
     // (such as the second street address line) lack a label
     const FIELDS_TO_HIDE = [
       "address.street1",
