@@ -185,10 +185,18 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
 
             return hashString(username);
           })
-          .then((hashedUsername) =>
+          .then((hashedUsername) => {
+            // Skip the Google Sheet logging if we're not in production
+            if (
+              window.location.hostname === "localhost" ||
+              window.location.hostname.endsWith(".test.myturn.com")
+            ) {
+              return;
+            }
+
             // This POST request will result in a new row being added to this Google Sheet:
             // https://docs.google.com/spreadsheets/d/1D67pfv4X-n1ugFQCK5gd_N4f2C80ozOaGU4P6ewMRKQ/edit
-            fetch(
+            return fetch(
               // This URL (and any "password"-y things we tried to add) would need
               // be sent by the user's browser anyway, so there's no point trying to
               // obfuscate or hide it
@@ -202,8 +210,8 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
                   hashedUsername: hashedUsername.slice(0, 7),
                 }),
               },
-            ),
-          )
+            );
+          })
           .catch((err: unknown) => {
             if (!(err instanceof AgreementsUnsignedError)) {
               console.error(

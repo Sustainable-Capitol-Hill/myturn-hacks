@@ -181,6 +181,14 @@ function addButtonToUserActionCell(
           checkInButton.classList.add("btn-success");
           textChildNode.textContent = " Checked In To Shop";
 
+          // Skip the Google Sheet logging if we're not in production
+          if (
+            window.location.hostname === "localhost" ||
+            window.location.hostname.endsWith(".test.myturn.com")
+          ) {
+            return;
+          }
+
           return hashString(username).then((hashedUsername) =>
             // This POST request will result in a new row being added to this Google Sheet:
             // https://docs.google.com/spreadsheets/d/1D67pfv4X-n1ugFQCK5gd_N4f2C80ozOaGU4P6ewMRKQ/edit

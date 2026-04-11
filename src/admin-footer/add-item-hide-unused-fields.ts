@@ -14,10 +14,12 @@ if (window.location.pathname === "/library/orgInventory/create") {
       "Embodied Carbon",
       "Emission Factor",
       // `Loans & Money` section
+      "Date Purchased",
       "Daily Late Fee",
       "Grace period on late fees (in days)",
       "Tax(es)",
       "Source / Supplier",
+      "Excluded Fulfillment Methods",
     ];
 
     FIELDS_TO_HIDE.forEach(function (fieldLabelText) {
