@@ -45,12 +45,5 @@ if (window.location.pathname === "/library/orgInventory/create") {
       // HTML form submission. But we can hide it.
       nodeToHide.style.display = "none";
     });
-
-    // Finally, trigger MyTurn's janky JavaScript to recalculate the height
-    // of its content and update the `style.height` attribute on the
-    // (`absolute`ly-positioned) content. Otherwise, there will be a big
-    // blank gap between the form fields and the submit buttons. This is
-    // only necessary on desktop-width layouts.
-    window.dispatchEvent(new Event("resize"));
   });
 }
