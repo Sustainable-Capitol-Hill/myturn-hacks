@@ -46,13 +46,14 @@ const validLocationCodes = {
     "C 1.2",
     "C 1.3",
     "C 1.4",
-    // The `D 1.#` shelves are for consumables only
-    "E 1.0",
-    "E 1.1",
-    "E 1.2",
-    "E 1.3",
-    "E 1.35",
-    "E 1.4",
+    "D 1.0",
+    "D 1.1",
+    "D 1.2",
+    "D 1.3",
+    "D 1.4",
+    "D 1.5",
+    "D 1.6",
+    // The `E 1.#` shelves are for consumables only
   ],
   "Inventory Room Ends and Walls": [
     "Hung on Inventory Room Door",
