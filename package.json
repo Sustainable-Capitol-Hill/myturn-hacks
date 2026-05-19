@@ -23,5 +23,7 @@
     "format": "prettier --write src/"
   },
   "type": "module",
-  "dependencies": {}
+  "dependencies": {
+    "p-limit": "^7.3.0"
+  }
 }

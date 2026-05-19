@@ -86,6 +86,18 @@ const proxyMiddleware = createProxyMiddleware<Request, Response>({
           );
         });
 
+        // Occasionally there are links that are absolute URLs, which need to
+        // be altered to point to the proxy server
+        soup.window.document.querySelectorAll("a").forEach((a) => {
+          const href = a.getAttribute("href");
+          if (href?.toLowerCase().startsWith(MYTURN.toLowerCase())) {
+            const url = new URL(href);
+            url.protocol = "http:";
+            url.host = `${HOST}:${String(PORT)}`;
+            a.setAttribute("href", url.toString());
+          }
+        });
+
         return soup.serialize();
       },
     ),
