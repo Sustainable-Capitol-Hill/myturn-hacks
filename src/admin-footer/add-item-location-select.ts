@@ -50,6 +50,7 @@ const validLocationCodes = {
     "D 1.1",
     "D 1.2",
     "D 1.3",
+    "D 1.35",
     "D 1.4",
     "D 1.5",
     "D 1.6",
