@@ -7,6 +7,7 @@ import "./money-transaction-details-reenable-checked-in-items.ts";
 import "./remove-regular-membership.ts";
 import "./search-users-shop-check-in-button.ts";
 import "./set-first-unused-item-id.ts";
+import "./uncheck-membership-auto-renew.ts";
 import "./user-details-shop-check-in-button.ts";
 
 console.info(
