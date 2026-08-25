@@ -25,7 +25,8 @@ function throttle(func: () => void, delay: number) {
 function addButtonToUserActionCell(
   actionCell: HTMLElement,
   username: string,
-  hasEligibleMembership: boolean,
+  hasEligibleMembershipType: boolean,
+  hasUnexpiredMembership: boolean,
 ) {
   let userId: string | null = null;
   const firstButton = actionCell.querySelector("a");
@@ -80,16 +81,18 @@ function addButtonToUserActionCell(
   checkInButton.classList.add("btn-warning");
   iconChildNode.classList.remove("fa-shopping-cart");
 
-  if (!hasEligibleMembership) {
+  if (!hasEligibleMembershipType || !hasUnexpiredMembership) {
     iconChildNode.classList.add("fa-ban");
     // This also disables clicking functionality, etc
     checkInButton.classList.add("disabled");
-    checkInButtonContainer.title =
-      "Patron does not have an eligible membership to use the shop";
     textChildNode.textContent = " Ineligible For Shop";
-  }
 
-  if (hasEligibleMembership) {
+    if (!hasEligibleMembershipType) {
+      checkInButtonContainer.title = "Patron has an ineligible membership type";
+    } else if (!hasUnexpiredMembership) {
+      checkInButtonContainer.title = "Patron has an expired membership";
+    }
+  } else {
     // These anchors all use a space character (rather than proper CSS) to separate their icon from their text
     textChildNode.textContent = " Check In To Shop";
 
@@ -278,16 +281,17 @@ function addButtonsForEligibleUsers() {
       return;
     }
 
-    const hasEligibleMembership =
+    const hasEligibleMembershipType =
       typeof membership === "string" &&
-      typeof expiration === "string" &&
-      validMembershipTypes.includes(membership) &&
-      new Date(expiration) >= new Date();
+      validMembershipTypes.includes(membership);
+    const hasUnexpiredMembership =
+      typeof expiration === "string" && new Date(expiration) >= new Date();
 
     addButtonToUserActionCell(
       actionCell as HTMLElement,
       username,
-      hasEligibleMembership,
+      hasEligibleMembershipType,
+      hasUnexpiredMembership,
     );
   });
 }
