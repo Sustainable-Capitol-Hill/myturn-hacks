@@ -25,18 +25,22 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
     // Use a XPath queries to find specific cells based on text content, since
     // there is poor semantic HTML structure to search otherwise
     const usernameNodesSnapshot = getUserDetailsNodes("Username");
-    const membershipNodesSnapshot = getUserDetailsNodes("Membership Type");
+    const membershipTypeNodesSnapshot = getUserDetailsNodes("Membership Type");
+    const expirationNodesSnapshot = getUserDetailsNodes(
+      "Membership Expiration",
+    );
     const warningNodesSnapshot = getUserDetailsNodes("Warning");
 
     if (
       usernameNodesSnapshot.snapshotLength !== 1 ||
-      membershipNodesSnapshot.snapshotLength !== 1 ||
+      membershipTypeNodesSnapshot.snapshotLength !== 1 ||
+      expirationNodesSnapshot.snapshotLength !== 1 ||
       warningNodesSnapshot.snapshotLength !== 1
     ) {
       // We don't expect zero or multiple matches, so if we encounter
       // them we should not do anything to this element
       console.warn(
-        "Could not identify the username, membership, and/or warning nodes",
+        "Could not identify the username, membership, expiration date, and/or warning nodes",
       );
       return;
     }
@@ -47,12 +51,30 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
       return;
     }
 
-    const membershipInfoNode = membershipNodesSnapshot.snapshotItem(
+    // These membership types – if not expired – are considered valid for shop check-in
+    const validMembershipTypes = [
+      "Standard (Annual)",
+      "Standard (Monthly)",
+      "Flexible",
+      "Sustaining (Annual)",
+      "regular",
+    ];
+    const membershipType = membershipTypeNodesSnapshot
+      .snapshotItem(0)
+      ?.textContent?.trim();
+    // Allow for there to be trailing information in this field, such as badges
+    const isMembershipTypeValid =
+      membershipType &&
+      validMembershipTypes.some((type) => membershipType.startsWith(type));
+
+    const expirationNode = expirationNodesSnapshot.snapshotItem(
       0,
     ) as HTMLElement;
+    const expirationDateText = expirationNode.textContent.trim();
+    const expirationDate = new Date(expirationDateText);
     const isMembershipActive =
-      membershipInfoNode.querySelector("span.badge")?.textContent.trim() ===
-      "Active";
+      expirationDateText && expirationDate >= new Date();
+
     const warningText = (
       warningNodesSnapshot.snapshotItem(0) as HTMLElement
     ).textContent.trim();
@@ -111,18 +133,20 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
       return;
     }
 
-    if (!isMembershipActive) {
+    if (!isMembershipTypeValid || !isMembershipActive || !isUserIdConfirmed) {
       iconChildNode.classList.add("fa-ban");
       checkInButton.classList.add("disabled");
-      checkInButtonContainer.title =
-        "Patron is not eligible based on membership status";
       textChildNode.textContent = " Ineligible For Shop";
-    } else if (!isUserIdConfirmed) {
-      iconChildNode.classList.add("fa-ban");
-      checkInButton.classList.add("disabled");
-      checkInButtonContainer.title =
-        "Patron has not yet confirmed they are at least 18 years old";
-      textChildNode.textContent = " Ineligible For Shop";
+
+      if (!isMembershipTypeValid) {
+        checkInButtonContainer.title =
+          "Patron has an ineligible membership type";
+      } else if (!isMembershipActive) {
+        checkInButtonContainer.title = "Patron has an expired membership";
+      } else if (!isUserIdConfirmed) {
+        checkInButtonContainer.title =
+          "Patron has not yet confirmed they are at least 18 years old";
+      }
     } else {
       iconChildNode.classList.add("fa-wrench");
       // These anchors all use a space character (rather than proper CSS) to separate their icon from their text
