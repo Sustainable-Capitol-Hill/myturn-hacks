@@ -64,20 +64,22 @@ if (window.location.pathname === "/library/orgMembership/userDetails") {
       ?.textContent?.trim();
     // Allow for there to be trailing information in this field, such as badges
     const isMembershipTypeValid =
-      membershipType &&
+      typeof membershipType === "string" &&
       validMembershipTypes.some((type) => membershipType.startsWith(type));
 
     const expirationNode = expirationNodesSnapshot.snapshotItem(
       0,
     ) as HTMLElement;
-    const expirationDateText = expirationNode.textContent.trim();
+    // Not entirely sure that ESLint's error is warranted here
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const expirationDateText = expirationNode.textContent?.trim();
     const expirationDate = new Date(expirationDateText);
     const isMembershipActive =
       expirationDateText && expirationDate >= new Date();
 
-    const warningText = (
-      warningNodesSnapshot.snapshotItem(0) as HTMLElement
-    ).textContent.trim();
+    const warningNode = warningNodesSnapshot.snapshotItem(0) as HTMLElement;
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    const warningText = warningNode.textContent?.trim();
     const isUserIdConfirmed = !warningText.includes(
       "confirm that they are at least 18 years old on their ID",
     );
